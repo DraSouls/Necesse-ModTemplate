@@ -29,15 +29,14 @@ def useDecompiledSources = true
 // ===== Dependencies ===== //
 
 repositories {
-    maven {
-        url "https://www.jetbrains.com/intellij-repository/releases"
-    }
     mavenCentral()
+    // for the decompiler plugin
+    maven { url "https://www.jetbrains.com/intellij-repository/releases" }
 }
 
 dependencies {
     // Other dependencies here. `implementation` dependencies will get packaged within the jar.
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    // implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
 
