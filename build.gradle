@@ -48,7 +48,7 @@ if (!file("$gameDirectory/Necesse.jar").exists()) {
     throw new Exception("Could not find game install directory. Make sure it is correct in the build.gradle file.")
 }
 
-def decompileDir = "$gameDirectory/decompiled"
+def decompileDir = "./libsrc/decompiled"
 if (project.hasProperty('useDecompiledSources')) {
     useDecompiledSources = project.property('useDecompiledSources') != 'false'
 }
@@ -156,16 +156,16 @@ task createAppID {
 task decompileToSources(type: JavaExec) {
     onlyIf { useDecompiledSources }
     outputs.upToDateWhen {
-        ant.checksum file: "$gameDirectory/Necesse.jar", todir: gameDirectory, fileext: '.sum'
-        def upToDate = file("$gameDirectory/Necesse.jar.sum").exists() &&
+        ant.checksum file: "$gameDirectory/Necesse.jar", todir: decompileDir, fileext: '.sum'
+        def upToDate = file("$decompileDir/Necesse.jar.sum").exists() &&
                 file("$decompileDir/origin.jar.sum").exists() &&
-                file("$gameDirectory/Necesse.jar.sum").text == file("$decompileDir/origin.jar.sum").text
-        if (upToDate) { delete file("$gameDirectory/Necesse.jar.sum") }
+                file("$decompileDir/Necesse.jar.sum").text == file("$decompileDir/origin.jar.sum").text
+        if (upToDate) { delete file("$decompileDir/Necesse.jar.sum") }
         return upToDate
     }
     doFirst { mkdir decompileDir }
     doLast {
-        ant.move file: "$gameDirectory/Necesse.jar.sum", tofile: "$decompileDir/origin.jar.sum", overwrite: true
+        ant.move file: "$decompileDir/Necesse.jar.sum", tofile: "$decompileDir/origin.jar.sum", overwrite: true
         ant.move file: "$decompileDir/Necesse.jar", tofile: "$decompileDir/Necesse-sources.jar"
     }
 
