@@ -20,7 +20,6 @@ def modInfo = [
 // Set this to your game's directory
 String gameDirectory = "N:/G/SteamLibrary/steamapps/common/Necesse"
 
-// If set to true, the decompiled source jar will be referred to by the IDE.
 // Set to false to disable full decompile, here or as a gradle parameter -PuseDecompiledSources=false
 def useDecompiledSources = true
 
@@ -54,12 +53,7 @@ if (project.hasProperty('useDecompiledSources')) {
 }
 
 configurations {
-    runnable {
-        description "For runnable JARs to be ran only on building."
-    }
-    baseGameDep {
-        description "Necesse.jar, either the base game jar, or decompiled sources. Will be added to compile classpath."
-    }
+    runnable { description "For runnable JARs to be ran only on building." }
 }
 
 dependencies {
@@ -157,16 +151,14 @@ task decompileToSources(type: JavaExec) {
     onlyIf { useDecompiledSources }
     outputs.upToDateWhen {
         ant.checksum file: "$gameDirectory/Necesse.jar", todir: gameDirectory, fileext: '.sum'
-        def upToDate = file("$gameDirectory/Necesse.jar.sum").exists() &&
+        return file("$gameDirectory/Necesse.jar.sum").exists() &&
                 file("$decompileDir/origin.jar.sum").exists() &&
                 file("$gameDirectory/Necesse.jar.sum").text == file("$decompileDir/origin.jar.sum").text
-        if (upToDate) { delete file("$gameDirectory/Necesse.jar.sum") }
-        return upToDate
     }
     doFirst { mkdir decompileDir }
     doLast {
         ant.move file: "$gameDirectory/Necesse.jar.sum", tofile: "$decompileDir/origin.jar.sum", overwrite: true
-        ant.move file: "$decompileDir/Necesse.jar", tofile: "$decompileDir/Necesse-sources.jar"
+        ant.move file: "$decompileDir/Necesse.jar", tofile: "$decompileDir/Necesse-sources.jar", overwrite: true
     }
 
     classpath configurations.runnable
@@ -174,7 +166,7 @@ task decompileToSources(type: JavaExec) {
     def banner = "/**\n  * Decompiled Necesse.jar sources for modding use only. Redistribution is strictly prohibited.\n  */\n\n"
     // decompiler preferences referred from https://github.com/JetBrains/intellij-community/blob/master/plugins/java-decompiler/plugin/src/org/jetbrains/java/decompiler/IdeaDecompiler.kt
     main 'org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler'
-    args '-hdc=0', '-dgs=1', '-rsy=1', '-rbr=1', '-nls=1', "-ban=$banner", '-mpm=60', '-ind=    ', '-iib=1', '-vac=1', '-ren=1', "$gameDirectory/Necesse.jar", decompileDir
+    args '-hdc=0', '-dgs=1', '-rsy=1', '-rbr=1', '-nls=1', "-ban=$banner", '-mpm=60', '-ind=    ', '-iib=1', '-vac=1', "$gameDirectory/Necesse.jar", decompileDir
 }
 
 task runClient(type: JavaExec) {
