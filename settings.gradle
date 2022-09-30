@@ -10,7 +10,7 @@ def modInfo = [
         modID          : "my.template.mod",
         modName        : "Template Mod",
         modVersion     : "1.0",
-        gameVersion    : "0.21.23",
+        gameVersion    : "0.21.25",
         modDescription : "Some template mod",
         author         : "YourNameHere",
         clientside     : false,
