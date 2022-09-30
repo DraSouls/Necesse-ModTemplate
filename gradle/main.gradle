@@ -122,6 +122,17 @@ dependencies {
 }
 
 
+// ===== Game version detection ===== //
+if (modInfo.gameVersion == "auto") {
+    URLClassLoader cl = new URLClassLoader([file("$gameDirectory/Necesse.jar").toURI().toURL()] as URL[])
+    def gameVersion = cl.loadClass("necesse.engine.GameInfo").getField("version").get("") as String
+    if (gameVersion != null && !gameVersion.blank) {
+        modInfo.gameVersion = gameVersion
+        println("Automatic version applied, detected game version: [$gameVersion]")
+    }
+}
+
+
 // ===== Misc ===== //
 
 modInfo.each {entry -> project.ext[entry.key] = entry.value }
