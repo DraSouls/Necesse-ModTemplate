@@ -24,7 +24,7 @@ def modInfo = [
 def gamePath = "auto"
 
 
-// ===== Use decompiles sources ===== //
+// ===== Use decompiled sources ===== //
 //   Can be overridden with -PuseDecompiledSources=false
 def useDecompiledSources = true
 

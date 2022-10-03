@@ -51,7 +51,7 @@ if (gameDirectory == "auto") {
     } else /* Unix/Linux */ {
         def HOME = System.getenv('HOME')
         // lol
-        paths = [
+        def paths = [
             "$HOME/Steam/SteamApps",
             "$HOME/.local/share/Steam/SteamApps",
             "$HOME/.local/share/Steam/steamapps",
