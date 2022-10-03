@@ -155,30 +155,33 @@ compileJava.options.encoding = "UTF-8"
 
 // ===== Tasks ===== //
 
-task generateModInfo {
-    doLast {
-        def outputFile = file("${sourceSets.main.java.outputDir}/mod.info")
-        def deps = modInfo.hasProperty('dependencies') ? modInfo.dependencies : []
-        def optDeps = modInfo.hasProperty('optionalDependencies') ? modInfo.optionalDependencies : []
-        def isClientSide = modInfo.hasProperty('clientside') && modInfo.clientside
-        outputFile.text = """{
-        |    id = ${modInfo.modID},
-        |    name = ${modInfo.modName},
-        |    version = ${modInfo.modVersion},
-        |    gameVersion = ${modInfo.gameVersion},
-        |    description = ${modInfo.modDescription},
-        |    author = ${modInfo.author},
-        |    clientside = ${isClientSide},
-        |    dependencies = [${deps.join(", ")}],
-        |    optionalDependencies = [${optDeps.join(", ")}],
-        |}""".stripMargin()
-    }
+task createModInfoFile(type: JavaExec) {
+    group "necesse"
+    description "Creates the mod info file"
+
+    def outputFile = "${sourceSets.main.java.outputDir}/mod.info"
+    def deps = modInfo.modDependencies?.join(', ') ?: ''
+    def optDeps = modInfo.modOptionalDependencies?.join(', ') ?: ''
+    def isClientSide = modInfo.clientside ?: false
+
+    classpath files("$gameDirectory/Necesse.jar")
+    main = "CreateModInfoFile"
+    args "-file", outputFile,
+            "-id", modInfo.modID,
+            "-name", modInfo.modName,
+            "-version", modInfo.modVersion,
+            "-gameVersion", modInfo.gameVersion,
+            "-description", modInfo.modDescription,
+            "-author", modInfo.author,
+            "-clientside", isClientSide,
+            "-dependencies", deps.blank ? '' : "[$deps]",
+            "-optionalDependencies", optDeps.blank ? '' : "[$optDeps]"
 }
 
 task buildModJar(type: Jar) {
     group "necesse"
     description "Generates the mod jar into the build folder"
-    dependsOn classes, generateModInfo
+    dependsOn classes, createModInfoFile
 
     doFirst {
         // Remove previous versions in the output development folder
