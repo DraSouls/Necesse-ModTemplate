@@ -24,10 +24,10 @@ if (gameDirectory == "auto") {
         }
         def checkReg = { boolean x64 ->
             def is = Runtime.getRuntime().exec("reg query \"HKEY_LOCAL_MACHINE\\SOFTWARE${x64 ? '\\WOW6432Node' : ''}\\Valve\\Steam\" /v InstallPath").getInputStream()
-            def o = new Scanner(is).useDelimiter('\\A').withCloseable { it.hasNext() ? it.next() : '' }
-            if (!o.contains('\t')) return null
-            def v = o.split('\t')
-            def path = o[v.length - 1] + '\\steamapps\\libraryfolders.vdf'
+            def o = new Scanner(is).useDelimiter('\\A').withCloseable { it.hasNext() ? it.next() : '' }.trim()
+            if (!(o.contains('\t') || o.contains('    '))) return null
+            def v = o.split('(\t| {4})')
+            def path = v[v.length - 1] + '\\steamapps\\libraryfolders.vdf'
             return file(path).exists() ? path : null
         }
 
